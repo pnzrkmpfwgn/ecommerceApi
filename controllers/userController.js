@@ -18,7 +18,8 @@ const registerUser = async (req, res) => {
 
         res.status(201).json({ message: 'User registered successfully' });
     } catch (error) {
-        res.status(500).json({ error: 'Failed to register user' });
+        console.log(req.body)
+        res.status(500).json({ error: error.message });
     }
 };
 
@@ -53,6 +54,7 @@ const loginUser = async (req, res) => {
 
 // Logout user
 const logoutUser = (req, res) => {
+    // TODO : Delete the JWT token from the database for the session for the user.
     // Implement your logout logic here
     res.status(200).json({ message: 'User logged out successfully' });
 };
