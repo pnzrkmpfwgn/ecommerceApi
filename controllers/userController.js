@@ -4,11 +4,15 @@ const User = require('../models/User');
 const registerUser = async (req, res) => {
     try {
         // Get user data from request body
-        const { username, email, password } = req.body;
+        const { username, name, surname, dob, msisdn, email, password } = req.body;
 
         // Create a new user instance
         const newUser = new User({
             username,
+            name,
+            surname,
+            dob,
+            msisdn,
             email,
             password,
         });
@@ -16,9 +20,12 @@ const registerUser = async (req, res) => {
         // Save the user to the database
         await newUser.save();
 
+        // TO DO: Send a welcome email to the user
+        // TO DO: Send a welcome SMS to the user
+        // TO DO: Return a JWT token for authentication after registration
+
         res.status(201).json({ message: 'User registered successfully' });
     } catch (error) {
-        console.log(req.body)
         res.status(500).json({ error: error.message });
     }
 };
@@ -26,6 +33,7 @@ const registerUser = async (req, res) => {
 // Login user
 const loginUser = async (req, res) => {
     try {
+        
         // Get user credentials from request body
         const { email, password } = req.body;
 
@@ -44,7 +52,7 @@ const loginUser = async (req, res) => {
         }
 
         // Generate and return a JWT token for authentication
-        const token = user.generateAuthToken();
+        const token = user.token();
 
         res.status(200).json({ token });
     } catch (error) {

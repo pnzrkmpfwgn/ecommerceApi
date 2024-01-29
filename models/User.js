@@ -7,7 +7,7 @@ const dotenv = require("dotenv");
 dotenv.config({ path: "./.env" });
 
 const User = sequelize.define(
-  "User",
+  "Users",
   {
     id: {
       type: DataTypes.INTEGER,
@@ -15,6 +15,26 @@ const User = sequelize.define(
       autoIncrement: true,
     },
     username: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
+    },
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
+    },
+    surname: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
+    },
+    dob: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      unique: true,
+    },
+    msisdn: {
       type: DataTypes.STRING,
       allowNull: false,
       unique: true,
@@ -41,9 +61,12 @@ const User = sequelize.define(
       allowNull: false,
       defaultValue: DataTypes.NOW,
     },
-    generateAuthToken: function () {
-      const token = jwt.sign({ id: this.id }, process.env.JWT_SECRET);
-      return token;
+    token: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        const token = jwt.sign({ id: this.id }, process.env.JWT_SECRET);
+        return token;
+      },
     },
   },
   {
@@ -68,5 +91,7 @@ const User = sequelize.define(
     },
   }
 );
+
+sequelize.sync();
 
 module.exports = User;
