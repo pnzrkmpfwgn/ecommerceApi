@@ -1,4 +1,5 @@
 const User = require('../models/User');
+const sendEmail = require('../utils/sendEmail');
 
 // Register a new user
 const registerUser = async (req, res) => {
@@ -20,11 +21,25 @@ const registerUser = async (req, res) => {
         // Save the user to the database
         await newUser.save();
 
-        // TO DO: Send a welcome email to the user
         // TO DO: Send a welcome SMS to the user
+        // TO DO: Send a welcome email to the user
+        
+        await sendEmail(
+            newUser.email,
+            'Welcome to E-Commerce',
+            'Please confirm your email address by clicking the link below',
+            `
+            <h1>Welcome to E-Commerce</h1>
+            <p>Please confirm your email address by clicking the link below</p>
+            <br />
+            <a href="#">Confirm Email</a>
+            `
+        )
+
         const user = await User.findOne({ email })
         const token = user.token;
-        res.status(201).json({ message: 'User registered successfully',token:token});
+
+        res.status(201).json({ message: 'User registered successfully, Confirmation mail sent',token:token});
     } catch (error) {
         res.status(500).json({ error: error.message});
     }
