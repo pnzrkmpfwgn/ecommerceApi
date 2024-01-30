@@ -22,11 +22,11 @@ const registerUser = async (req, res) => {
 
         // TO DO: Send a welcome email to the user
         // TO DO: Send a welcome SMS to the user
-        // TO DO: Return a JWT token for authentication after registration
-
-        res.status(201).json({ message: 'User registered successfully' });
+        const user = await User.findOne({ email })
+        const token = user.token;
+        res.status(201).json({ message: 'User registered successfully',token:token});
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ error: error.message});
     }
 };
 
@@ -39,7 +39,7 @@ const loginUser = async (req, res) => {
 
         // Find the user in the database
         const user = await User.findOne({ email });
-
+        
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
         }
@@ -52,11 +52,11 @@ const loginUser = async (req, res) => {
         }
 
         // Generate and return a JWT token for authentication
-        const token = user.token();
+        const token = user.token;
 
-        res.status(200).json({ token });
+        res.status(200).json({ msg: 'User logged in successfully',token:token});
     } catch (error) {
-        res.status(500).json({ error: 'Failed to login' });
+        res.status(500).json({ error: 'Failed to login', msg: error.message,details:error});
     }
 };
 

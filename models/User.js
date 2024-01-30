@@ -22,22 +22,22 @@ const User = sequelize.define(
     name: {
       type: DataTypes.STRING,
       allowNull: false,
-      unique: true,
+      unique: false,
     },
     surname: {
       type: DataTypes.STRING,
       allowNull: false,
-      unique: true,
+      unique: false,
     },
     dob: {
       type: DataTypes.DATE,
       allowNull: false,
-      unique: true,
+      unique: false,
     },
     msisdn: {
       type: DataTypes.STRING,
       allowNull: false,
-      unique: true,
+      unique: false,
     },
     email: {
       type: DataTypes.STRING,
@@ -83,14 +83,14 @@ const User = sequelize.define(
           user.password = await bcrypt.hash(user.password, salt);
         }
       },
-    },
-    instanceMethods: {
-      comparePassword: async function (password) {
-        return await bcrypt.compare(password, this.password);
-      },
-    },
+    }
   }
 );
+
+// Comparing password:
+User.prototype.comparePassword = async function (password) {
+  return await bcrypt.compare(password, this.password);
+};
 
 sequelize.sync();
 
