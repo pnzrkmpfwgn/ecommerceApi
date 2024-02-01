@@ -1,8 +1,13 @@
 const User = require("../models/User");
+const { validationResult } = require('express-validator');
 const sendEmail = require("../utils/sendEmail");
 
 // Register a new user
 const registerUser = async (req, res) => {
+  const errors = validationResult(req);
+  if(!errors.isEmpty()){
+    return res.status(400).json({error: errors.array()});
+  }
   try {
     // Get user data from request body
     const { username, name, surname, dob, msisdn, email, password } = req.body;
@@ -27,24 +32,23 @@ const registerUser = async (req, res) => {
     const user = await User.findOne({ email });
     const token = user.token;
 
-    await sendEmail(
-      newUser.email,
-      "Welcome to E-Commerce",
-      "Please confirm your email address by clicking the link below",
-      `
-            <h1>Welcome to E-Commerce</h1>
-            <p>Please confirm your email address by clicking the link below</p>
-            <br />
-            <a href="http://localhost:3000/api/users/verify/${token}">Confirm Email</a>
-            `
-    );
+    // Commented out for now.
+    // await sendEmail(
+    //   newUser.email,
+    //   "Welcome to E-Commerce",
+    //   "Please confirm your email address by clicking the link below",
+    //   `
+    //         <h1>Welcome to E-Commerce</h1>
+    //         <p>Please confirm your email address by clicking the link below</p>
+    //         <br />
+    //         <a href="http://localhost:3000/api/users/verify/${token}">Confirm Email</a>
+    //         `
+    // );
 
-    res
-      .status(201)
-      .json({
-        message: "User registered successfully, Confirmation mail sent",
-        token: token,
-      });
+    res.status(201).json({
+      message: "User registered successfully, Confirmation mail sent",
+      token: token,
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -52,6 +56,10 @@ const registerUser = async (req, res) => {
 
 // Login user
 const loginUser = async (req, res) => {
+  const errors = validationResult(req);
+  if(!errors.isEmpty()){
+    return res.status(400).json({error: errors.array()});
+  }
   try {
     // Get user credentials from request body
     const { email, password } = req.body;
@@ -65,7 +73,6 @@ const loginUser = async (req, res) => {
 
     // Check if the password is correct
     const isPasswordValid = await user.comparePassword(password);
-
     if (!isPasswordValid) {
       return res.status(401).json({ error: "Invalid password" });
     }
@@ -82,10 +89,22 @@ const loginUser = async (req, res) => {
 };
 
 // Logout user
-const logoutUser = (req, res) => {
-  // TODO : Delete the JWT token from the database for the session for the user.
-  // Implement your logout logic here
-  res.status(200).json({ message: "User logged out successfully" });
+const logoutUser = async (req, res) => {
+  try {
+    const userId = req.params.id;
+
+    const user = await User.findByPk(userId);
+    console.log("Before ",user.token)
+    user.token = null;
+    await user.save();
+    console.log("After ",user.token)
+
+    res.status(200).json({ message: "User logged out successfully" });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ error: "Failed to logout", msg: error.message, details: error });
+  }
 };
 
 // Get user by ID
@@ -143,17 +162,29 @@ const verifyUser = async (req, res) => {
     } else {
       user.isVerified = true;
       user.token = null;
-      
+
       const newToken = user.token;
 
       user.token = newToken;
       await user.save();
-      return res.status(200).json({ message: "User verified successfully",token:newToken });
+      return res
+        .status(200)
+        .json({ message: "User verified successfully", token: newToken });
     }
   } catch (err) {
     return res.status(500).json({ error: err.message });
   }
 };
+
+
+// Test Controller
+const testController = async (req, res) => {
+  try {
+    res.status(200).json({ msg: "Test controller works" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
 
 module.exports = {
   registerUser,
@@ -163,4 +194,6 @@ module.exports = {
   updateUser,
   deleteUser,
   verifyUser,
+
+  testController
 };

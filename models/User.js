@@ -69,8 +69,15 @@ const User = sequelize.define(
     token: {
       type: DataTypes.VIRTUAL,
       get() {
-        const token = jwt.sign({ id: this.id }, process.env.JWT_SECRET);
-        return token;
+        jwt.sign(
+          { id: this.id },
+          process.env.JWT_SECRET,
+          { expiresIn: "5 days" },
+          (err, token) => {
+            if (err) throw err;
+            return token;
+          }
+        );
       },
     },
   },
@@ -82,13 +89,13 @@ const User = sequelize.define(
           user.password = await bcrypt.hash(user.password, salt);
         }
       },
-      beforeUpdate: async (user) => {
-        if (user.password) {
+      beforeSave: async (user, options) => {
+        if (user.changed("password")) {
           const salt = await bcrypt.genSalt(10);
           user.password = await bcrypt.hash(user.password, salt);
         }
       },
-    }
+    },
   }
 );
 
