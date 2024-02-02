@@ -8,10 +8,11 @@ const {
   updateUser,
   deleteUser,
   verifyUser,
-  testController
+  testController,
+  getUsers
 } = require("../controllers/userController");
 const { check } = require("express-validator");
-const {auth} = require("../middleware/auth");
+const {protect} = require("../middleware/auth");
 
 // Register a new user
 router.post(
@@ -44,7 +45,10 @@ router.post(
 );
 
 // Logout user
-router.post("/logout/:id", logoutUser);
+router.post("/logout",protect ,logoutUser);
+
+// Get Users
+router.get("/", getUsers);
 
 // Get user by ID
 router.get("/:id", getUser);
@@ -59,6 +63,6 @@ router.delete("/:id", deleteUser);
 router.get("/verify/:token", verifyUser);
 
 //Test Route with token
-router.get("/",auth,testController);
+router.get("/a",protect,testController);
 
 module.exports = router;

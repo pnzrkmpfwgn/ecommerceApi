@@ -1,26 +1,57 @@
-const jwt = require('jsonwebtoken');
-const dotenv = require('dotenv');
+const jwt = require("jsonwebtoken");
+const asyncHandler = require("./asyncHandler");
+const ErrorResponse = require("../utils/errorResponse");
+const User = require("../models/User");
+const dotenv = require("dotenv");
 
-dotenv.config({ path: './.env' });
+// Load config
+dotenv.config({ path: "./.env" });
 
-module.exports = function (req, res, next) {
-  const token = req.header('x-auth-token');
-    console.log(token);
+//Protect routes
+exports.protect = asyncHandler(async (req, res, next) => {
+  let token;
+
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith("Bearer")
+  ) {
+    //Set token from Bearer token in header
+    token = req.headers.authorization.split(" ")[1];
+    //Set token from cookie
+  } /*else if (req.cookies.token) {
+    token = req.cookies.token;
+  }*/
+
+  //Make sure that token exists
   if (!token) {
-    return res.status(401).json({ msg: 'No token, authorization denied' });
+    return next(new ErrorResponse("Not authorized to access this route", 401));
   }
 
   try {
-    jwt.verify(token, process.env.JWT_SECRET, (error, decoded) => {
-      if (error) {
-        return res.status(401).json({ msg: 'Token is not valid', error: error.message });
-      } else {
-        req.user = decoded.user;
-        next();
-      }
-    });
+    //Verify token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    const user = await User.findByPk(decoded.id);
+
+    if (user.dataValues.id === decoded.id) {
+      next();
+    }
   } catch (err) {
-    console.error('Error in auth middleware:', err);
-    res.status(500).json({ msg: 'Server Error', error: err.message });
+    return next(new ErrorResponse("Not authorized to access this route", 401));
   }
+});
+
+//Grant access to specific roles
+exports.authorize = (...roles) => {
+  return (req, res, next) => {
+    if (!roles.includes(req.user.role)) {
+      return next(
+        new ErrorResponse(
+          `User role ${req.user.role} is not authorized to access this route`,
+          403
+        )
+      );
+    }
+    next();
+  };
 };

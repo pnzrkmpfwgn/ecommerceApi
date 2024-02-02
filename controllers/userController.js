@@ -1,12 +1,16 @@
 const User = require("../models/User");
-const { validationResult } = require('express-validator');
+const { validationResult } = require("express-validator");
 const sendEmail = require("../utils/sendEmail");
+const { jwt } = require("jsonwebtoken");
+const dotenv = require("dotenv");
+
+dotenv.config({ path: "./.env" });
 
 // Register a new user
 const registerUser = async (req, res) => {
   const errors = validationResult(req);
-  if(!errors.isEmpty()){
-    return res.status(400).json({error: errors.array()});
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ error: errors.array() });
   }
   try {
     // Get user data from request body
@@ -57,8 +61,8 @@ const registerUser = async (req, res) => {
 // Login user
 const loginUser = async (req, res) => {
   const errors = validationResult(req);
-  if(!errors.isEmpty()){
-    return res.status(400).json({error: errors.array()});
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ error: errors.array() });
   }
   try {
     // Get user credentials from request body
@@ -78,7 +82,8 @@ const loginUser = async (req, res) => {
     }
 
     // Generate and return a JWT token for authentication
-    const token = user.token;
+    const token = await user.token;
+    console.log("Token ", token);
 
     res.status(200).json({ msg: "User logged in successfully", token: token });
   } catch (error) {
@@ -90,20 +95,38 @@ const loginUser = async (req, res) => {
 
 // Logout user
 const logoutUser = async (req, res) => {
+  console.log("Logged out");
   try {
-    const userId = req.params.id;
+    res.cookie("token", "none", {
+      expires: new Date(Date.now() + 10 * 1000),
+      httpOnly: true,
+    });
 
-    const user = await User.findByPk(userId);
-    console.log("Before ",user.token)
-    user.token = null;
-    await user.save();
-    console.log("After ",user.token)
-
-    res.status(200).json({ message: "User logged out successfully" });
+    return res.status(200).json({
+      success: true,
+      data: {},
+    });
+    // res.status(200).json({ message: "User logged out successfully" });
   } catch (error) {
     res
       .status(500)
       .json({ error: "Failed to logout", msg: error.message, details: error });
+  }
+};
+
+//Get User List
+const getUsers = async (req, res) => {
+  const limit = parseInt(req.query.limit) || 10;
+  console.log("users");
+  try {
+    const users = await User.findAll({
+      limit: limit,
+      offset: 0,
+      order: [["createdAt", "DESC"]],
+    });
+    res.status(200).json(users);
+  } catch (error) {
+    res.status(500).json({ error: error });
   }
 };
 
@@ -176,24 +199,24 @@ const verifyUser = async (req, res) => {
   }
 };
 
-
 // Test Controller
 const testController = async (req, res) => {
   try {
-    res.status(200).json({ msg: "Test controller works" });
+    res.status(200).json({ msg: "authorized" });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
-}
+};
 
 module.exports = {
   registerUser,
   loginUser,
   logoutUser,
   getUser,
+  getUsers,
   updateUser,
   deleteUser,
   verifyUser,
 
-  testController
+  testController,
 };
