@@ -9,10 +9,10 @@ const {
   deleteUser,
   verifyUser,
   testController,
-  getUsers
+  getUsers,
 } = require("../controllers/userController");
 const { check } = require("express-validator");
-const {protect} = require("../middleware/auth");
+const { protect } = require("../middleware/auth");
 
 // Register a new user
 router.post(
@@ -45,24 +45,25 @@ router.post(
 );
 
 // Logout user
-router.post("/logout",protect ,logoutUser);
+router.post("/logout", protect, logoutUser);
 
 // Get Users
 router.get("/", getUsers);
 
 // Get user by ID
+// This route also can use auth middleware, it is up to product owner
 router.get("/:id", getUser);
 
 // Update user by ID
-router.put("/:id", updateUser);
+router.put("/update/:id", protect, updateUser);
 
 // Delete user by ID
-router.delete("/:id", deleteUser);
+router.delete("/delete/:id", protect, deleteUser);
 
 // Verify user by ID
 router.get("/verify/:token", verifyUser);
 
 //Test Route with token
-router.get("/a",protect,testController);
+router.get("/a", protect, testController);
 
 module.exports = router;

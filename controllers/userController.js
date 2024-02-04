@@ -1,7 +1,6 @@
 const User = require("../models/User");
 const { validationResult } = require("express-validator");
 const sendEmail = require("../utils/sendEmail");
-const { jwt } = require("jsonwebtoken");
 const dotenv = require("dotenv");
 
 dotenv.config({ path: "./.env" });
@@ -123,6 +122,7 @@ const getUsers = async (req, res) => {
       limit: limit,
       offset: 0,
       order: [["createdAt", "DESC"]],
+      attributes: ["username", "name", "surname"],
     });
     res.status(200).json(users);
   } catch (error) {
@@ -131,12 +131,15 @@ const getUsers = async (req, res) => {
 };
 
 // Get user by ID
+// This countroller can have a protected route, but it is up to the product owner.
 const getUser = async (req, res) => {
   try {
     const userId = req.params.id;
 
     // Find the user in the database by ID
-    const user = await User.findById(userId);
+    const user = await User.findByPk(userId, {
+      attributes: ["username", "name", "surname"],
+    });
 
     if (!user) {
       return res.status(404).json({ error: "User not found" });
@@ -144,7 +147,7 @@ const getUser = async (req, res) => {
 
     res.status(200).json(user);
   } catch (error) {
-    res.status(500).json({ error: "Failed to get user" });
+    res.status(500).json({ error: "Failed to get user", msg: error.message });
   }
 };
 
@@ -154,25 +157,45 @@ const updateUser = async (req, res) => {
     const userId = req.params.id;
     const updateData = req.body;
 
-    // Find the user in the database by ID and update the data
-    const updatedUser = await User.findByIdAndUpdate(userId, updateData, {
-      new: true,
+    const [numberOfAffectedRows, affectedRows] = await User.update(updateData, {
+      where: { id: userId },
+      returning: true, // needed for affectedRows to be populated
     });
+
+    // The successfully updated user (if any)
+    const updatedUser =
+      affectedRows && numberOfAffectedRows > 0 ? affectedRows[0] : null;
 
     if (!updatedUser) {
       return res.status(404).json({ error: "User not found" });
     }
 
-    res.status(200).json(updatedUser);
+    res.status(200).json({ msg: "Successfully updated"});
   } catch (error) {
-    res.status(500).json({ error: "Failed to update user" });
+    res.status(500).json({ error: "Failed to update user", msg: error });
   }
 };
 
+// Delete user by ID
 const deleteUser = async (req, res) => {
-  //TODO: Implement delete user logic here
+  const id = req.params.id;
+
+  try {
+    const numberOfDestroyedRows = await User.destroy({
+      where: { id }
+    });
+
+    if (numberOfDestroyedRows > 0) {
+      res.status(200).send({msg:"User Deleted"}); // No Content
+    } else {
+      res.status(404).json({ error: 'User not found' });
+    }
+  } catch (error) {
+    res.status(500).json({ error: error.toString() });
+  }
 };
 
+// Verify user
 const verifyUser = async (req, res) => {
   try {
     if (!req.params.token) {
@@ -198,6 +221,11 @@ const verifyUser = async (req, res) => {
     return res.status(500).json({ error: err.message });
   }
 };
+
+// Reset Password
+const resetPassword = async (req,res)=>{
+  
+}
 
 // Test Controller
 const testController = async (req, res) => {
