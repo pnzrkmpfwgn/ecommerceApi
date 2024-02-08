@@ -1,9 +1,15 @@
 const User = require("../models/User");
 const { validationResult } = require("express-validator");
 const sendEmail = require("../utils/sendEmail");
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
+
 const dotenv = require("dotenv");
 
 dotenv.config({ path: "./.env" });
+
+// Test Everything before doing anything here!!!
+// TODO: Username should not contain special characters
 
 // Register a new user
 const registerUser = async (req, res) => {
@@ -32,21 +38,21 @@ const registerUser = async (req, res) => {
     // TO DO: Send a welcome SMS to the user
     // TO DO: Send a welcome email to the user
 
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ where: { email: email } });
     const token = user.token;
 
     // Commented out for now.
-    // await sendEmail(
-    //   newUser.email,
-    //   "Welcome to E-Commerce",
-    //   "Please confirm your email address by clicking the link below",
-    //   `
-    //         <h1>Welcome to E-Commerce</h1>
-    //         <p>Please confirm your email address by clicking the link below</p>
-    //         <br />
-    //         <a href="http://localhost:3000/api/users/verify/${token}">Confirm Email</a>
-    //         `
-    // );
+    await sendEmail(
+      newUser.email,
+      "Welcome to E-Commerce",
+      "Please confirm your email address by clicking the link below",
+      `
+            <h1>Welcome to E-Commerce</h1>
+            <p>Please confirm your email address by clicking the link below</p>
+            <br />
+            <a href="http://localhost:3000/api/users/verify/${token}">Confirm Email</a>
+            `
+    );
 
     res.status(201).json({
       message: "User registered successfully, Confirmation mail sent",
@@ -68,21 +74,27 @@ const loginUser = async (req, res) => {
     const { email, password } = req.body;
 
     // Find the user in the database
-    const user = await User.findOne({ email });
-
+    const user = await User.findOne({
+      where: { email: email },
+      attributes: ["id", "username", "name", "surname", "password"],
+    });
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
-
     // Check if the password is correct
     const isPasswordValid = await user.comparePassword(password);
     if (!isPasswordValid) {
       return res.status(401).json({ error: "Invalid password" });
     }
 
-    // Generate and return a JWT token for authentication
-    const token = await user.token;
-    console.log("Token ", token);
+    //Generate jwt token
+    const token = jwt.sign(
+      {
+        id: user.id,
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: "5 days" }
+    );
 
     res.status(200).json({ msg: "User logged in successfully", token: token });
   } catch (error) {
@@ -170,7 +182,7 @@ const updateUser = async (req, res) => {
       return res.status(404).json({ error: "User not found" });
     }
 
-    res.status(200).json({ msg: "Successfully updated"});
+    res.status(200).json({ msg: "Successfully updated" });
   } catch (error) {
     res.status(500).json({ error: "Failed to update user", msg: error });
   }
@@ -182,13 +194,13 @@ const deleteUser = async (req, res) => {
 
   try {
     const numberOfDestroyedRows = await User.destroy({
-      where: { id }
+      where: { id },
     });
 
     if (numberOfDestroyedRows > 0) {
-      res.status(200).send({msg:"User Deleted"}); // No Content
+      res.status(200).send({ msg: "User Deleted" }); // No Content
     } else {
-      res.status(404).json({ error: 'User not found' });
+      res.status(404).json({ error: "User not found" });
     }
   } catch (error) {
     res.status(500).json({ error: error.toString() });
@@ -206,12 +218,13 @@ const verifyUser = async (req, res) => {
     if (!user) {
       return res.status(400).json({ error: "Invalid token" });
     } else {
-      user.isVerified = true;
-      user.token = null;
+      await user.update({ isVerified: true });
+      await user.update({ token: null });
 
       const newToken = user.token;
 
-      user.token = newToken;
+      await user.update({ token: newToken });
+
       await user.save();
       return res
         .status(200)
@@ -222,10 +235,63 @@ const verifyUser = async (req, res) => {
   }
 };
 
+// Reset Password Send Email
+const resetPasswordSendEmail = async (req, res) => {
+  const { email } = req.body;
+  const user = await User.findOne({ email });
+
+  try {
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    const token = jwt.sign({ userEmail: user.email }, process.env.JWT_SECRET, {
+      expiresIn: "1h",
+    });
+
+    console.log(token);
+    res.status(200).json({ message: "Password reset link sent to your email" });
+    await sendEmail(
+      email,
+      "Reset Password",
+      "Please click the link below to reset your password",
+      `
+              <h1>Reset Password</h1>
+              <p>Reset Password with below link</p>
+              <p>If you didn't requested password reset ignore this email.</p>
+              <br />
+              <a href="http://localhost:3000/api/users/resetPassword/${token}">Reset Password</a>
+              `
+    );
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 // Reset Password
-const resetPassword = async (req,res)=>{
-  
-}
+const resetPassword = async (req, res) => {
+  const token = req.params.token;
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    const user = await User.findOne({ email: decoded.userEmail });
+    // console.log("Decoded: ", decoded);
+    if (!token) {
+      return res.status(400).json({ error: "Invalid token" });
+    }
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    const salt = await bcrypt.genSalt(10);
+    const password = await bcrypt.hash(req.body.password, salt);
+    await user.update({ password: password });
+
+    res.status(200).json({ message: "Password reset successfully" });
+  } catch (error) {
+    res.status(500).json({ msg: "Error", error: error.message });
+  }
+};
 
 // Test Controller
 const testController = async (req, res) => {
@@ -245,6 +311,8 @@ module.exports = {
   updateUser,
   deleteUser,
   verifyUser,
+  resetPassword,
+  resetPasswordSendEmail,
 
   testController,
 };

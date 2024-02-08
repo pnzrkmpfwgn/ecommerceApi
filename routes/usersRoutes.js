@@ -10,6 +10,8 @@ const {
   verifyUser,
   testController,
   getUsers,
+  resetPassword,
+  resetPasswordSendEmail,
 } = require("../controllers/userController");
 const { check } = require("express-validator");
 const { protect } = require("../middleware/auth");
@@ -62,6 +64,12 @@ router.delete("/delete/:id", protect, deleteUser);
 
 // Verify user by ID
 router.get("/verify/:token", verifyUser);
+
+// Send email for password change
+router.post("/reset-password-send-email", resetPasswordSendEmail);
+
+// Reset Password
+router.post("/reset-password/:token", resetPassword);
 
 //Test Route with token
 router.get("/a", protect, testController);

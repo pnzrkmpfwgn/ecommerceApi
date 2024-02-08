@@ -71,7 +71,7 @@ const User = sequelize.define(
       get() {
         return new Promise((resolve, reject) => {
           jwt.sign(
-            { 
+            {
               id: this.id,
             },
             process.env.JWT_SECRET,
@@ -92,13 +92,7 @@ const User = sequelize.define(
           const salt = await bcrypt.genSalt(10);
           user.password = await bcrypt.hash(user.password, salt);
         }
-      }
-      // beforeSave: async (user, options) => {
-      //   if (user.changed("password")) {
-      //     const salt = await bcrypt.genSalt(10);
-      //     user.password = await bcrypt.hash(user.password, salt);
-      //   }
-      // },
+      },
     },
   }
 );
