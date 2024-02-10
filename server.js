@@ -3,7 +3,9 @@ const dotenv = require("dotenv");
 const app = express();
 const port = 3000;
 const { Sequelize } = require("sequelize");
-const userRoutes = require("./routes/usersRoutes"); // Import the routes
+const userRoutes = require("./routes/usersRoutes");
+const productRoutes = require("./routes/productsRoutes");
+const adminRoutes = require("./routes/adminRoutes");
 
 // Load config
 dotenv.config({ path: "./.env" });
@@ -29,7 +31,9 @@ sequelize
 app.use(express.json());
 
 // Set up routes for your API
-app.use("/api/users", userRoutes); // Mount the routes
+app.use("/api/users", userRoutes);
+app.use("/api/products", productRoutes);
+app.use("/api/admin", adminRoutes);
 
 // Start the server
 app.listen(port, () => {
