@@ -1,4 +1,5 @@
 const User = require("../models/User");
+const Admin = require("../models/Admin");
 const { validationResult } = require("express-validator");
 const sendEmail = require("../utils/sendEmail");
 const jwt = require("jsonwebtoken");
@@ -12,21 +13,19 @@ dotenv.config({ path: "./.env" });
 // TODO: Username should not contain special characters
 
 // Register a new user
-const registerUser = async (req, res) => {
+const registerAdmin = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ error: errors.array() });
   }
   try {
     // Get user data from request body
-    const { username, name, surname, dob, msisdn, email, password } = req.body;
+    const { name, surname, msisdn, email, password } = req.body;
 
     // Create a new user instance
-    const newUser = new User({
-      username,
+    const newUser = new Admin({
       name,
       surname,
-      dob,
       msisdn,
       email,
       password,
@@ -38,24 +37,11 @@ const registerUser = async (req, res) => {
     // TO DO: Send a welcome SMS to the user
     // TO DO: Send a welcome email to the user
 
-    const user = await User.findOne({ where: { email: email } });
-    const token = user.token;
-
-    // Commented out for now.
-    await sendEmail(
-      newUser.email,
-      "Welcome to E-Commerce",
-      "Please confirm your email address by clicking the link below",
-      `
-            <h1>Welcome to E-Commerce</h1>
-            <p>Please confirm your email address by clicking the link below</p>
-            <br />
-            <a href="http://localhost:3000/api/users/verify/${token}">Confirm Email</a>
-            `
-    );
+    const user = await Admin.findOne({ where: { email: email } });
+    const token = jwt.sign({ id: user.id }, process.env.JWT_ADMIN_SECRET,{expiresIn:"5 days"});
 
     res.status(201).json({
-      message: "User registered successfully, Confirmation mail sent",
+      message: "Admin registered successfully",
       token: token,
     });
   } catch (error) {
@@ -64,7 +50,7 @@ const registerUser = async (req, res) => {
 };
 
 // Login user
-const loginUser = async (req, res) => {
+const loginAdmin = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ error: errors.array() });
@@ -74,9 +60,9 @@ const loginUser = async (req, res) => {
     const { email, password } = req.body;
 
     // Find the user in the database
-    const user = await User.findOne({
+    const user = await Admin.findOne({
       where: { email: email },
-      attributes: ["id", "username", "name", "surname", "password"],
+      attributes: ["id", "name", "surname", "password"],
     });
     if (!user) {
       return res.status(404).json({ error: "User not found" });
@@ -92,11 +78,11 @@ const loginUser = async (req, res) => {
       {
         id: user.id,
       },
-      process.env.JWT_SECRET,
+      process.env.JWT_ADMIN_SECRET,
       { expiresIn: "5 days" }
     );
 
-    res.status(200).json({ msg: "User logged in successfully", token: token });
+    res.status(200).json({ msg: "Admin logged in successfully", token: token });
   } catch (error) {
     res
       .status(500)
@@ -105,7 +91,7 @@ const loginUser = async (req, res) => {
 };
 
 // Logout user
-const logoutUser = async (req, res) => {
+const logoutAdmin = async (req, res) => {
   console.log("Logged out");
   try {
     res.cookie("token", "none", {
@@ -128,19 +114,16 @@ const logoutUser = async (req, res) => {
 //Get User List
 const getUsers = async (req, res) => {
   const limit = parseInt(req.query.limit) || 10;
+  console.log("users");
   try {
     const users = await User.findAll({
       limit: limit,
       offset: 0,
       order: [["createdAt", "DESC"]],
-      attributes: ["username", "name", "surname"],
-      where: {
-        deletedAt:null
-      }
     });
     res.status(200).json(users);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: error });
   }
 };
 
@@ -151,11 +134,9 @@ const getUser = async (req, res) => {
     const userId = req.params.id;
 
     // Find the user in the database by ID
-    const user = await User.findByPk(userId, {
-      attributes: ["username", "name", "surname","deletedAt"]
-    });
+    const user = await User.findByPk(userId);
 
-    if (!user || user.deletedAt !== null) {
+    if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
 
@@ -167,6 +148,7 @@ const getUser = async (req, res) => {
 
 // Update user by ID
 const updateUser = async (req, res) => {
+  console.log("Update controller Executed")
   try {
     const userId = req.params.id;
     const updateData = req.body;
@@ -209,33 +191,21 @@ const deleteUser = async (req, res) => {
   }
 };
 
-// Verify user
-const verifyUser = async (req, res) => {
+// Soft Delete User by ID
+const softDeleteUser = async (req, res) => {
+  const id = req.params.id;
   try {
-    if (!req.params.token) {
-      return res.status(400).json({ error: "Invalid token" });
-    }
-
-    const user = await User.findOne({ token: req.params.token });
+    const user = await User.findByPk(id);
     if (!user) {
-      return res.status(400).json({ error: "Invalid token" });
-    } else {
-      await user.update({ isVerified: true });
-      await user.update({ token: null });
-
-      const newToken = user.token;
-
-      await user.update({ token: newToken });
-
-      await user.save();
-      return res
-        .status(200)
-        .json({ message: "User verified successfully", token: newToken });
+      return res.status(404).json({ error: "User not found" });
     }
-  } catch (err) {
-    return res.status(500).json({ error: err.message });
+    user.update({ deletedAt: new Date() });
+    res.status(200).json({ msg: "User Deleted" });
+  } catch (error) {
+    res.status(500).json({ error: error.toString() });
   }
-};
+
+}
 
 // Reset Password Send Email
 const resetPasswordSendEmail = async (req, res) => {
@@ -270,51 +240,15 @@ const resetPasswordSendEmail = async (req, res) => {
   }
 };
 
-// Reset Password
-const resetPassword = async (req, res) => {
-  const token = req.params.token;
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-    const user = await User.findOne({ email: decoded.userEmail });
-    // console.log("Decoded: ", decoded);
-    if (!token) {
-      return res.status(400).json({ error: "Invalid token" });
-    }
-
-    if (!user) {
-      return res.status(404).json({ error: "User not found" });
-    }
-    const salt = await bcrypt.genSalt(10);
-    const password = await bcrypt.hash(req.body.password, salt);
-    await user.update({ password: password });
-
-    res.status(200).json({ message: "Password reset successfully" });
-  } catch (error) {
-    res.status(500).json({ msg: "Error", error: error.message });
-  }
-};
-
-// Test Controller
-const testController = async (req, res) => {
-  try {
-    res.status(200).json({ msg: "authorized" });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
 
 module.exports = {
-  registerUser,
-  loginUser,
-  logoutUser,
+  registerAdmin,
+  loginAdmin,
+  logoutAdmin,
   getUser,
   getUsers,
   updateUser,
   deleteUser,
-  verifyUser,
-  resetPassword,
-  resetPasswordSendEmail,
-
-  testController,
+  softDeleteUser,
+  resetPasswordSendEmail
 };
