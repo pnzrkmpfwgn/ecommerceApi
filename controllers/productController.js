@@ -3,23 +3,120 @@ const dotenv = require("dotenv");
 
 dotenv.config({ path: "./.env" });
 
-//Get User List
-const getProducts = async (req, res) => {
-    const limit = parseInt(req.query.limit) || 10;
-    console.log("users");
-    try {
-      const users = await User.findAll({
-        limit: limit,
-        offset: 0,
-        order: [["createdAt", "DESC"]],
-        attributes: ["username", "name", "surname"],
-      });
-      res.status(200).json(users);
-    } catch (error) {
-      res.status(500).json({ error: error });
-    }
+// Set Product as Admin
+// This controller should be modified to fit the storage system that uses this api
+// For now it is created in a basic form
+const createProductAdmin = async (req, res) => {
+  try {
+    const {
+      name,
+      imageUrl,
+      price,
+      quantityInStock,
+      category,
+      description,
+      vendor,
+    } = req.body;
+
+    const product = await Product.create({
+      name,
+      imageUrl,
+      price,
+      quantityInStock,
+      category,
+      description,
+      vendor,
+    });
+
+    res.status(201).json({ msg: "Product Created", product: product });
+  } catch (error) {
+    res.status(500).json({ error: error.toString() });
+  }
 };
 
+// Get Proudct List as admin
+const getProductAdmin = async (req, res) => {
+  const limit = parseInt(req.query.limit) || 10;
+  try {
+    const users = await Product.findAll({
+      limit: limit,
+      offset: 0,
+      order: [["createdAt", "DESC"]],
+    });
+    res.status(200).json(users);
+  } catch (error) {
+    res.status(500).json({ error: error });
+  }
+};
+
+// Get Product by ID as admin
+const getProductByIDAdmin = async (req, res) => {
+  try {
+    const productId = req.params.id;
+
+    // Find the user in the database by ID
+    const product = await Product.findByPk(productId);
+
+    if (!product) {
+      return res.status(404).json({ error: "Product not found" });
+    }
+
+    res.status(200).json(product);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ error: "Failed to get product", msg: error.message });
+  }
+};
+
+// Update Produt by ID as admin
+const updateProductByIDAdmin = async (req, res) => {
+  try {
+    const productId = req.params.id;
+    const updateData = req.body;
+
+    const [numberOfAffectedRows, affectedRows] = await Product.update(
+      updateData,
+      {
+        where: { productId: productId },
+        returning: true, // needed for affectedRows to be populated
+      }
+    );
+
+    if (numberOfAffectedRows < 1) {
+      return res.status(404).json({ error: "Product not found" });
+    }
+
+    res.status(200).json(affectedRows);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ error: "Failed to update product", msg: error.message });
+  }
+};
+
+// Soft Delete Product by ID as admin
+const softDeleteProductByIDAdmin = async (req, res) => {
+  try {
+    const productId = req.params.id;
+    const product = await Product.findByPk(productId);
+    if (!product) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    product.update({ deletedAt: new Date() });
+    return res.status(200).json({ msg: "Product soft deleted" });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ error: "Failed to soft delete product", msg: error.message });
+  }
+};
+
+// Export the controllers
 module.exports = {
-    getProducts
-}
+  createProductAdmin,
+  getProductAdmin,
+  getProductByIDAdmin,
+  updateProductByIDAdmin,
+  softDeleteProductByIDAdmin
+};

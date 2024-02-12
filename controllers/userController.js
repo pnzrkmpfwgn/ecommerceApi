@@ -42,17 +42,17 @@ const registerUser = async (req, res) => {
     const token = user.token;
 
     // Commented out for now.
-    await sendEmail(
-      newUser.email,
-      "Welcome to E-Commerce",
-      "Please confirm your email address by clicking the link below",
-      `
-            <h1>Welcome to E-Commerce</h1>
-            <p>Please confirm your email address by clicking the link below</p>
-            <br />
-            <a href="http://localhost:3000/api/users/verify/${token}">Confirm Email</a>
-            `
-    );
+    // await sendEmail(
+    //   newUser.email,
+    //   "Welcome to E-Commerce",
+    //   "Please confirm your email address by clicking the link below",
+    //   `
+    //         <h1>Welcome to E-Commerce</h1>
+    //         <p>Please confirm your email address by clicking the link below</p>
+    //         <br />
+    //         <a href="http://localhost:3000/api/users/verify/${token}">Confirm Email</a>
+    //         `
+    // );
 
     res.status(201).json({
       message: "User registered successfully, Confirmation mail sent",
@@ -135,8 +135,8 @@ const getUsers = async (req, res) => {
       order: [["createdAt", "DESC"]],
       attributes: ["username", "name", "surname"],
       where: {
-        deletedAt:null
-      }
+        deletedAt: null,
+      },
     });
     res.status(200).json(users);
   } catch (error) {
@@ -152,7 +152,7 @@ const getUser = async (req, res) => {
 
     // Find the user in the database by ID
     const user = await User.findByPk(userId, {
-      attributes: ["username", "name", "surname","deletedAt"]
+      attributes: ["username", "name", "surname", "deletedAt"],
     });
 
     if (!user || user.deletedAt !== null) {
@@ -204,6 +204,47 @@ const deleteUser = async (req, res) => {
     } else {
       res.status(404).json({ error: "User not found" });
     }
+  } catch (error) {
+    res.status(500).json({ error: error.toString() });
+  }
+};
+
+// Soft Delete user by ID (Freeze Account)
+const softDeleteUser = async (req, res) => {
+  const id = req.params.id;
+  try {
+    const user = await User.findByPk(id);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    user.update({ deletedAt: new Date() });
+    res.status(200).json({ msg: "User Deleted" });
+  } catch (error) {
+    res.status(500).json({ error: error.toString() });
+  }
+  // TO DO: Add a logic for unfreezing the account after some time
+};
+
+// Unfreeze Account by email
+// ! // This controller should be modified according to the frontend
+const unFreezeAccount = async (req, res) => {
+  const { email, password } = req.body;
+  try {
+    const user = await User.findOne({ where: { email: email } });
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    const isPasswordValid = await user.comparePassword(password);
+    if (!isPasswordValid) {
+      return res.status(401).json({ error: "Invalid password" });
+    }
+
+    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
+      expiresIn: "5 days",
+    });
+
+    user.update({ deletedAt: null });
+    res.status(200).json({ msg: "User Account Unfrozen",token: token});
   } catch (error) {
     res.status(500).json({ error: error.toString() });
   }
@@ -312,6 +353,8 @@ module.exports = {
   getUsers,
   updateUser,
   deleteUser,
+  softDeleteUser,
+  unFreezeAccount,
   verifyUser,
   resetPassword,
   resetPasswordSendEmail,

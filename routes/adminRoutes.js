@@ -9,7 +9,9 @@ const {
   getUser,
   updateUser,
   deleteUser,
-  softDeleteUser
+  softDeleteUser,
+  unFreezeAccount,
+  resetPasswordSendEmail
 } = require("../controllers/adminController");
 const { adminAuth } = require("../middleware/adminAuth");
 
@@ -58,6 +60,12 @@ router.put("/update/:id", adminAuth, updateUser);
 router.delete("/delete/:id", adminAuth, deleteUser);
 
 // Soft delete user by Id
-router.post("/softdelete/:id",adminAuth,softDeleteUser);
+router.put("/softdelete/:id",adminAuth,softDeleteUser);
+
+// Unfreeze User by Id
+router.put("/unfreeze/:id",adminAuth,unFreezeAccount);
+
+// Send Password Reset Email as admin
+router.post("/sendpasswordresetemail", adminAuth,resetPasswordSendEmail);
 
 module.exports = router;
