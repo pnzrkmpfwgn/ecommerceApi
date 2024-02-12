@@ -3,7 +3,6 @@ const Admin = require("../models/Admin");
 const { validationResult } = require("express-validator");
 const sendEmail = require("../utils/sendEmail");
 const jwt = require("jsonwebtoken");
-const bcrypt = require("bcrypt");
 
 const dotenv = require("dotenv");
 
@@ -38,7 +37,9 @@ const registerAdmin = async (req, res) => {
     // TO DO: Send a welcome email to the user
 
     const user = await Admin.findOne({ where: { email: email } });
-    const token = jwt.sign({ id: user.id }, process.env.JWT_ADMIN_SECRET,{expiresIn:"5 days"});
+    const token = jwt.sign({ id: user.id }, process.env.JWT_ADMIN_SECRET, {
+      expiresIn: "5 days",
+    });
 
     res.status(201).json({
       message: "Admin registered successfully",
@@ -148,7 +149,7 @@ const getUser = async (req, res) => {
 
 // Update user by ID
 const updateUser = async (req, res) => {
-  console.log("Update controller Executed")
+  console.log("Update controller Executed");
   try {
     const userId = req.params.id;
     const updateData = req.body;
@@ -204,8 +205,22 @@ const softDeleteUser = async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: error.toString() });
   }
+};
 
-}
+// Unfreeze Account by ID
+const unFreezeAccount = async (req, res) => {
+  const id = req.params.id;
+  try {
+    const user = await User.findByPk(id);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    user.update({ deletedAt: null });
+    res.status(200).json({ msg: "User Unfrozen" });
+  } catch (error) {
+    res.status(500).json({ error: error.toString() });
+  }
+};
 
 // Reset Password Send Email
 const resetPasswordSendEmail = async (req, res) => {
@@ -222,7 +237,6 @@ const resetPasswordSendEmail = async (req, res) => {
     });
 
     console.log(token);
-    res.status(200).json({ message: "Password reset link sent to your email" });
     await sendEmail(
       email,
       "Reset Password",
@@ -235,11 +249,11 @@ const resetPasswordSendEmail = async (req, res) => {
               <a href="http://localhost:3000/api/users/resetPassword/${token}">Reset Password</a>
               `
     );
+    res.status(200).json({ message: "Password reset link sent to your email" });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
-
 
 module.exports = {
   registerAdmin,
@@ -250,5 +264,6 @@ module.exports = {
   updateUser,
   deleteUser,
   softDeleteUser,
-  resetPasswordSendEmail
+  unFreezeAccount,
+  resetPasswordSendEmail,
 };

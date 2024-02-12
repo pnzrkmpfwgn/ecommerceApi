@@ -39,6 +39,11 @@ const Product = sequelize.define("Products", {
     type: DataTypes.STRING,
     allowNull: false,
   },
+  deletedAt:{
+    type: DataTypes.DATE,
+    allowNull: true,
+    defaultValue: null
+  }
 });
 
 // Sync the model with the database

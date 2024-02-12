@@ -12,6 +12,8 @@ const {
   getUsers,
   resetPassword,
   resetPasswordSendEmail,
+  softDeleteUser,
+  unFreezeAccount,
 } = require("../controllers/userController");
 const { check } = require("express-validator");
 const { protect } = require("../middleware/auth");
@@ -61,6 +63,12 @@ router.put("/update/:id", protect, updateUser);
 
 // Delete user by ID
 router.delete("/delete/:id", protect, deleteUser);
+
+// Soft delete user by ID
+router.put("/freezeacount/:id", protect, softDeleteUser);
+
+// Unfreeze Account by email
+router.put("/unfreezeaccount", unFreezeAccount);
 
 // Verify user by ID
 router.get("/verify/:token", verifyUser);
