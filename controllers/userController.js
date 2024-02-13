@@ -39,7 +39,9 @@ const registerUser = async (req, res) => {
     // TO DO: Send a welcome email to the user
 
     const user = await User.findOne({ where: { email: email } });
-    const token = user.token;
+    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
+      expiresIn: "5 days",
+    });
 
     // Commented out for now.
     // await sendEmail(
@@ -244,7 +246,7 @@ const unFreezeAccount = async (req, res) => {
     });
 
     user.update({ deletedAt: null });
-    res.status(200).json({ msg: "User Account Unfrozen",token: token});
+    res.status(200).json({ msg: "User Account Unfrozen", token: token });
   } catch (error) {
     res.status(500).json({ error: error.toString() });
   }
@@ -275,6 +277,38 @@ const verifyUser = async (req, res) => {
     }
   } catch (err) {
     return res.status(500).json({ error: err.message });
+  }
+};
+
+// Note : You might need to limit the amount of email that can be sent 
+// so the malicious users wouldn't abuse the system
+// Send verification email again
+const sendVerificationEmail = async (req, res) => {
+  const { email } = req.body;
+  const user = await User.findOne({ email });
+
+  try {
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
+      expiresIn: "5 days",
+    });
+    // Send Email
+    await sendEmail(
+      email,
+      "Welcome to E-Commerce",
+      "Please confirm your email address by clicking the link below",
+      `
+            <h1>Welcome to E-Commerce</h1>
+            <p>Please confirm your email address by clicking the link below</p>
+            <br />
+            <a href="http://localhost:3000/api/users/verify/${token}">Confirm Email</a>
+            `
+    );
+    res.status(200).json({ message: "Verification email sent" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 };
 
@@ -358,6 +392,7 @@ module.exports = {
   verifyUser,
   resetPassword,
   resetPasswordSendEmail,
+  sendVerificationEmail,
 
   testController,
 };
