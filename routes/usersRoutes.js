@@ -14,6 +14,7 @@ const {
   resetPasswordSendEmail,
   softDeleteUser,
   unFreezeAccount,
+  sendVerificationEmail,
 } = require("../controllers/userController");
 const { check } = require("express-validator");
 const { protect } = require("../middleware/auth");
@@ -72,6 +73,9 @@ router.put("/unfreezeaccount", unFreezeAccount);
 
 // Verify user by ID
 router.get("/verify/:token", verifyUser);
+
+// Send Email Verification On demand by user
+router.post("/send-email-verification", sendVerificationEmail);
 
 // Send email for password change
 router.post("/reset-password-send-email", resetPasswordSendEmail);
