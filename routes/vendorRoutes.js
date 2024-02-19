@@ -1,24 +1,24 @@
 const express = require("express");
 const router = express.Router();
 const {
-  registerUser,
-  loginUser,
-  logoutUser,
-  getUser,
-  updateUser,
+  registerVendor,
+  loginVendor,
+  logoutVendor,
+  updateVendor,
   deleteUser,
   verifyUser,
   testController,
-  getUsers,
   resetPassword,
   resetPasswordSendEmail,
-  softDeleteUser,
+  softDeleteVendor,
   unFreezeAccount,
   sendVerificationEmail,
-} = require("../controllers/userController");
+  getVendors,
+  getVendor,
+} = require("../controllers/vendorController");
+const { getUser, getUsers } = require("../controllers/userController");
 const { check } = require("express-validator");
-const { protect } = require("../middleware/auth");
-const { getVendor, getVendors } = require("../controllers/vendorController");
+const { vendorAuth } = require("../middleware/vendorAuth");
 
 // Register a new user
 router.post(
@@ -34,7 +34,7 @@ router.post(
       "Please enter a password with 6 or more characters"
     ).isLength({ min: 6 }),
   ],
-  registerUser
+  registerVendor
 );
 
 // Login user
@@ -47,33 +47,33 @@ router.post(
       "Please enter a password with 6 or more characters"
     ).isLength({ min: 6 }),
   ],
-  loginUser
+  loginVendor
 );
 
 // Logout user
-router.post("/logout", protect, logoutUser);
+router.post("/logout", vendorAuth, logoutVendor);
 
-// Get Users
-router.get("/", getUsers);
+// Get users
+router.get("/get/users", getUsers);
 
 // Get user by ID
-// This route also can use auth middleware, it is up to product owner
-router.get("/:id", getUser);
+router.get("/get/user/:id", getUser);
 
 // Get Vendors
-router.get("/get/vendors", getVendors);
+router.get("/", getVendors);
 
 // Get vendor by ID
-router.get("/get/vendor/:id", getVendor);
+// This route also can use auth middleware, it is up to product owner
+router.get("/:id", getVendor);
 
 // Update user by ID
-router.put("/update/:id", protect, updateUser);
+router.put("/update/:id", vendorAuth, updateVendor);
 
 // Delete user by ID
-router.delete("/delete/:id", protect, deleteUser);
+router.delete("/delete/:id", vendorAuth, deleteUser);
 
 // Soft delete user by ID
-router.put("/freezeacount/:id", protect, softDeleteUser);
+router.put("/freezeacount/:id", vendorAuth, softDeleteVendor);
 
 // Unfreeze Account by email
 router.put("/unfreezeaccount", unFreezeAccount);
@@ -91,6 +91,6 @@ router.post("/reset-password-send-email", resetPasswordSendEmail);
 router.post("/reset-password/:token", resetPassword);
 
 //Test Route with token
-router.get("/a", protect, testController);
+router.get("/a", vendorAuth, testController);
 
 module.exports = router;

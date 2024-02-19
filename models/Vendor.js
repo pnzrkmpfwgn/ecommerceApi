@@ -6,18 +6,18 @@ const dotenv = require("dotenv");
 
 dotenv.config({ path: "./.env" });
 
-const User = sequelize.define(
-  "Users",
+const Vendor = sequelize.define(
+  'Vendors',
   {
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
     },
-    userType: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      unique: false,
+    userType:{
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: false,
     },
     username: {
       type: DataTypes.STRING,
@@ -108,18 +108,18 @@ const User = sequelize.define(
 );
 
 // Comparing password:
-User.prototype.comparePassword = async function (password) {
+Vendor.prototype.comparePassword = async function (password) {
   return await bcrypt.compare(password, this.password);
 };
 
 // Sync the model with the database
 (async () => {
   try {
-    await sequelize.sync();
-    console.log("Product model synced successfully");
+      await sequelize.sync();
+      console.log('Product model synced successfully');
   } catch (error) {
-    console.error("Error syncing Product model:", error);
+      console.error('Error syncing Product model:', error);
   }
 })();
 
-module.exports = User;
+module.exports = Vendor;

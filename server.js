@@ -6,6 +6,7 @@ const { Sequelize } = require("sequelize");
 const userRoutes = require("./routes/usersRoutes");
 const productRoutes = require("./routes/productsRoutes");
 const adminRoutes = require("./routes/adminRoutes");
+const vendorRoutes = require("./routes/vendorRoutes");
 
 // Load config
 dotenv.config({ path: "./.env" });
@@ -34,6 +35,7 @@ app.use(express.json());
 app.use("/api/users", userRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/vendors", vendorRoutes);
 
 // Start the server
 app.listen(port, () => {

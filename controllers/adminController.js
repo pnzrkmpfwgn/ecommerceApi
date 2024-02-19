@@ -1,4 +1,5 @@
 const User = require("../models/User");
+const Vendor = require("../models/Vendor");
 const Admin = require("../models/Admin");
 const { validationResult } = require("express-validator");
 const sendEmail = require("../utils/sendEmail");
@@ -147,6 +148,64 @@ const getUser = async (req, res) => {
   }
 };
 
+//Get Vendors
+const getVendors = async (req, res) => {
+  const limit = parseInt(req.query.limit) || 10;
+  console.log("vendors");
+  try {
+    const vendors = await Vendor.findAll({
+      limit: limit,
+      offset: 0,
+      order: [["createdAt", "DESC"]],
+    });
+    res.status(200).json(vendors);
+  } catch (error) {
+    res.status(500).json({ error: error });
+  }
+};
+
+// Get Vendor by ID
+const getVendor = async (req, res) => {
+  try {
+    const vendorId = req.params.id;
+    const vendor = await Vendor.findByPk(vendorId);
+    if (!vendor) {
+      return res.status(404).json({ error: "Vendor not found" });
+    }
+    res.status(200).json(vendor);
+  } catch (error) {
+    res.status(500).json({ error: error.toString() });
+  }
+};
+
+// Update Vendor by ID
+const updateVendor = async (req, res) => {
+  try {
+    const vendorId = req.params.id;
+    const updateData = req.body;
+
+    const [numberOfAffectedRows, affectedRows] = await Vendor.update(
+      updateData,
+      {
+        where: { id: vendorId },
+        returning: true, // needed for affectedRows to be populated
+      }
+    );
+
+    // The successfully updated user (if any)
+    const updatedVendor =
+      affectedRows && numberOfAffectedRows > 0 ? affectedRows[0] : null;
+
+    if (!updatedVendor) {
+      return res.status(404).json({ error: "Vendor not found" });
+    }
+
+    res.status(200).json({ msg: "Successfully updated" });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to update vendor", msg: error });
+  }
+};
+
 // Update user by ID
 const updateUser = async (req, res) => {
   console.log("Update controller Executed");
@@ -192,6 +251,40 @@ const deleteUser = async (req, res) => {
   }
 };
 
+// Delete Vendor By ID
+const deleteVendor = async (req, res) => {
+  const id = req.params.id;
+
+  try {
+    const numberOfDestroyedRows = await Vendor.destroy({
+      where: { id },
+    });
+
+    if (numberOfDestroyedRows > 0) {
+      res.status(200).send({ msg: "Vendor Deleted" }); // No Content
+    } else {
+      res.status(404).json({ error: "Vendor not found" });
+    }
+  } catch (error) {
+    res.status(500).json({ error: error.toString() });
+  }
+};
+
+// Soft Delete Vendor by ID
+const softDeleteVendor = async (req, res) => {
+  const id = req.params.id;
+  try {
+    const vendor = await Vendor.findByPk(id);
+    if (!vendor) {
+      return res.status(404).json({ error: "Vendor not found" });
+    }
+    vendor.update({ deletedAt: new Date() });
+    res.status(200).json({ msg: "Vendor Deleted" });
+  } catch (error) {
+    res.status(500).json({ error: error.toString() });
+  }
+}
+
 // Soft Delete User by ID
 const softDeleteUser = async (req, res) => {
   const id = req.params.id;
@@ -216,13 +309,28 @@ const unFreezeAccount = async (req, res) => {
       return res.status(404).json({ error: "User not found" });
     }
     user.update({ deletedAt: null });
-    res.status(200).json({ msg: "User Unfrozen" });
+    res.status(200).json({ msg: "User Unfrozen"});
   } catch (error) {
     res.status(500).json({ error: error.toString() });
   }
 };
 
-// Reset Password Send Email
+// Unfreeze Vendor Account by ID
+const unFreezeVendor = async (req, res) => {
+  const id = req.params.id;
+  try {
+    const vendor = await Vendor.findByPk(id);
+    if (!vendor) {
+      return res.status(404).json({ error: "Vendor not found" });
+    }
+    vendor.update({ deletedAt: null });
+    res.status(200).json({ msg: "Vendor Unfrozen" });
+  } catch (error) {
+    res.status(500).json({ error: error.toString() });
+  }
+};
+
+//  Send Email Reset Password to user
 const resetPasswordSendEmail = async (req, res) => {
   const { email } = req.body;
   const user = await User.findOne({ email });
@@ -260,10 +368,16 @@ module.exports = {
   loginAdmin,
   logoutAdmin,
   getUser,
+  getVendor,
+  getVendors,
   getUsers,
   updateUser,
+  updateVendor,
   deleteUser,
+  deleteVendor,
   softDeleteUser,
+  softDeleteVendor,
   unFreezeAccount,
+  unFreezeVendor,
   resetPasswordSendEmail,
 };

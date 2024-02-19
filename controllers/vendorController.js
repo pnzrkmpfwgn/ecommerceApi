@@ -1,3 +1,4 @@
+const Vendor = require("../models/Vendor");
 const User = require("../models/User");
 const { validationResult } = require("express-validator");
 const sendEmail = require("../utils/sendEmail");
@@ -12,7 +13,7 @@ dotenv.config({ path: "./.env" });
 // TODO: Username should not contain special characters
 
 // Register a new user
-const registerUser = async (req, res) => {
+const registerVendor = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ error: errors.array() });
@@ -20,9 +21,10 @@ const registerUser = async (req, res) => {
   try {
     // Get user data from request body
     const { username, name, surname, dob, msisdn, email, password } = req.body;
-    const userType = "Buyer";
+    const userType = "Vendor";
+    console.log("Controller Executed!!!");
     // Create a new user instance
-    const newUser = new User({
+    const newUser = new Vendor({
       username,
       userType,
       name,
@@ -39,8 +41,8 @@ const registerUser = async (req, res) => {
     // TO DO: Send a welcome SMS to the user
     // TO DO: Send a welcome email to the user
 
-    const user = await User.findOne({ where: { email: email } });
-    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
+    const user = await Vendor.findOne({ where: { email: email } });
+    const token = jwt.sign({ id: user.id }, process.env.JWT_VENDOR_SECRET, {
       expiresIn: "5 days",
     });
 
@@ -62,12 +64,14 @@ const registerUser = async (req, res) => {
       token: token,
     });
   } catch (error) {
+    console.log("Controller Executed!!!");
+
     res.status(500).json({ error: error.message });
   }
 };
 
 // Login user
-const loginUser = async (req, res) => {
+const loginVendor = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ error: errors.array() });
@@ -77,7 +81,7 @@ const loginUser = async (req, res) => {
     const { email, password } = req.body;
 
     // Find the user in the database
-    const user = await User.findOne({
+    const user = await Vendor.findOne({
       where: { email: email },
       attributes: ["id", "username", "name", "surname", "password"],
     });
@@ -95,11 +99,13 @@ const loginUser = async (req, res) => {
       {
         id: user.id,
       },
-      process.env.JWT_SECRET,
+      process.env.JWT_VENDOR_SECRET,
       { expiresIn: "5 days" }
     );
 
-    res.status(200).json({ msg: "User logged in successfully", token: token });
+    res
+      .status(200)
+      .json({ msg: "Vendor logged in successfully", token: token });
   } catch (error) {
     res
       .status(500)
@@ -108,7 +114,7 @@ const loginUser = async (req, res) => {
 };
 
 // Logout user
-const logoutUser = async (req, res) => {
+const logoutVendor = async (req, res) => {
   console.log("Logged out");
   try {
     res.cookie("token", "none", {
@@ -128,11 +134,11 @@ const logoutUser = async (req, res) => {
   }
 };
 
-//Get User List
-const getUsers = async (req, res) => {
+// Get Vendors
+const getVendors = async (req, res) => {
   const limit = parseInt(req.query.limit) || 10;
   try {
-    const users = await User.findAll({
+    const vendors = await Vendor.findAll({
       limit: limit,
       offset: 0,
       order: [["createdAt", "DESC"]],
@@ -141,43 +147,45 @@ const getUsers = async (req, res) => {
         deletedAt: null,
       },
     });
-    res.status(200).json(users);
+    res.status(200).json(vendors);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
 
-// Get user by ID
-// This countroller can have a protected route, but it is up to the product owner.
-const getUser = async (req, res) => {
+// Get Vendor by ID
+const getVendor = async (req, res) => {
   try {
-    const userId = req.params.id;
+    const vendorId = req.params.id;
 
     // Find the user in the database by ID
-    const user = await User.findByPk(userId, {
+    const vendor = await Vendor.findByPk(vendorId, {
       attributes: ["username", "name", "surname", "deletedAt"],
     });
 
-    if (!user || user.deletedAt !== null) {
-      return res.status(404).json({ error: "User not found" });
+    if (!vendor || vendor.deletedAt !== null) {
+      return res.status(404).json({ error: "Vendor not found" });
     }
 
-    res.status(200).json(user);
+    res.status(200).json(vendor);
   } catch (error) {
-    res.status(500).json({ error: "Failed to get user", msg: error.message });
+    res.status(500).json({ error: "Failed to get vendor", msg: error.message });
   }
 };
 
 // Update user by ID
-const updateUser = async (req, res) => {
+const updateVendor = async (req, res) => {
   try {
     const userId = req.params.id;
     const updateData = req.body;
 
-    const [numberOfAffectedRows, affectedRows] = await User.update(updateData, {
-      where: { id: userId },
-      returning: true, // needed for affectedRows to be populated
-    });
+    const [numberOfAffectedRows, affectedRows] = await Vendor.update(
+      updateData,
+      {
+        where: { id: userId },
+        returning: true, // needed for affectedRows to be populated
+      }
+    );
 
     // The successfully updated user (if any)
     const updatedUser =
@@ -198,7 +206,7 @@ const deleteUser = async (req, res) => {
   const id = req.params.id;
 
   try {
-    const numberOfDestroyedRows = await User.destroy({
+    const numberOfDestroyedRows = await Vendor.destroy({
       where: { id },
     });
 
@@ -213,15 +221,15 @@ const deleteUser = async (req, res) => {
 };
 
 // Soft Delete user by ID (Freeze Account)
-const softDeleteUser = async (req, res) => {
+const softDeleteVendor = async (req, res) => {
   const id = req.params.id;
   try {
-    const user = await User.findByPk(id);
+    const user = await Vendor.findByPk(id);
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
     user.update({ deletedAt: new Date() });
-    res.status(200).json({ msg: "User Deleted" });
+    res.status(200).json({ msg: "Vendor Deleted" });
   } catch (error) {
     res.status(500).json({ error: error.toString() });
   }
@@ -233,7 +241,7 @@ const softDeleteUser = async (req, res) => {
 const unFreezeAccount = async (req, res) => {
   const { email, password } = req.body;
   try {
-    const user = await User.findOne({ where: { email: email } });
+    const user = await Vendor.findOne({ where: { email: email } });
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
@@ -242,7 +250,7 @@ const unFreezeAccount = async (req, res) => {
       return res.status(401).json({ error: "Invalid password" });
     }
 
-    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
+    const token = jwt.sign({ id: user.id }, process.env.JWT_VENDOR_SECRET, {
       expiresIn: "5 days",
     });
 
@@ -260,16 +268,18 @@ const verifyUser = async (req, res) => {
       return res.status(400).json({ error: "Invalid token" });
     }
 
-    const user = await User.findOne({ token: req.params.token });
+    const user = await Vendor.findOne({ token: req.params.token });
     if (!user) {
       return res.status(400).json({ error: "Invalid token" });
     } else {
       await user.update({ isVerified: true });
       await user.update({ token: null });
 
-      const newToken = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
-        expiresIn: "1 hour",
-      });
+      const newToken = jwt.sign(
+        { id: user.id },
+        process.env.JWT_VENDOR_SECRET,
+        { expiresIn: "1 hour" }
+      );
 
       await user.update({ token: newToken });
 
@@ -288,27 +298,29 @@ const verifyUser = async (req, res) => {
 // Send verification email again
 const sendVerificationEmail = async (req, res) => {
   const { email } = req.body;
-  const user = await User.findOne({ email });
+  const user = await Vendor.findOne({ email });
 
   try {
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
-    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
+    const token = jwt.sign({ id: user.id }, process.env.JWT_VENDOR_SECRET, {
       expiresIn: "5 days",
     });
+    console.log(token);
     // Send Email
-    await sendEmail(
-      email,
-      "Welcome to E-Commerce",
-      "Please confirm your email address by clicking the link below",
-      `
-            <h1>Welcome to E-Commerce</h1>
-            <p>Please confirm your email address by clicking the link below</p>
-            <br />
-            <a href="http://localhost:3000/api/users/verify/${token}">Confirm Email</a>
-            `
-    );
+    //Commented out for now
+    // await sendEmail(
+    //   email,
+    //   "Welcome to E-Commerce",
+    //   "Please confirm your email address by clicking the link below",
+    //   `
+    //         <h1>Welcome to E-Commerce</h1>
+    //         <p>Please confirm your email address by clicking the link below</p>
+    //         <br />
+    //         <a href="http://localhost:3000/api/users/verify/${token}">Confirm Email</a>
+    //         `
+    // );
     res.status(200).json({ message: "Verification email sent" });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -318,31 +330,36 @@ const sendVerificationEmail = async (req, res) => {
 // Reset Password Send Email
 const resetPasswordSendEmail = async (req, res) => {
   const { email } = req.body;
-  const user = await User.findOne({ email });
+  const user = await Vendor.findOne({ email });
 
   try {
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
 
-    const token = jwt.sign({ userEmail: user.email }, process.env.JWT_SECRET, {
-      expiresIn: "1h",
-    });
+    const token = jwt.sign(
+      { userEmail: user.email },
+      process.env.JWT_VENDOR_SECRET,
+      {
+        expiresIn: "1h",
+      }
+    );
 
     console.log(token);
     res.status(200).json({ message: "Password reset link sent to your email" });
-    await sendEmail(
-      email,
-      "Reset Password",
-      "Please click the link below to reset your password",
-      `
-              <h1>Reset Password</h1>
-              <p>Reset Password with below link</p>
-              <p>If you didn't requested password reset ignore this email.</p>
-              <br />
-              <a href="http://localhost:3000/api/users/resetPassword/${token}">Reset Password</a>
-              `
-    );
+    // Commented out for now
+    // await sendEmail(
+    //   email,
+    //   "Reset Password",
+    //   "Please click the link below to reset your password",
+    //   `
+    //           <h1>Reset Password</h1>
+    //           <p>Reset Password with below link</p>
+    //           <p>If you didn't requested password reset ignore this email.</p>
+    //           <br />
+    //           <a href="http://localhost:3000/api/users/resetPassword/${token}">Reset Password</a>
+    //           `
+    // );
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -352,9 +369,9 @@ const resetPasswordSendEmail = async (req, res) => {
 const resetPassword = async (req, res) => {
   const token = req.params.token;
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, process.env.JWT_VENDOR_SECRET);
 
-    const user = await User.findOne({ email: decoded.userEmail });
+    const user = await Vendor.findOne({ email: decoded.userEmail });
     // console.log("Decoded: ", decoded);
     if (!token) {
       return res.status(400).json({ error: "Invalid token" });
@@ -383,14 +400,14 @@ const testController = async (req, res) => {
 };
 
 module.exports = {
-  registerUser,
-  loginUser,
-  logoutUser,
-  getUser,
-  getUsers,
-  updateUser,
+  registerVendor,
+  loginVendor,
+  logoutVendor,
+  getVendor,
+  getVendors,
+  updateVendor,
   deleteUser,
-  softDeleteUser,
+  softDeleteVendor,
   unFreezeAccount,
   verifyUser,
   resetPassword,

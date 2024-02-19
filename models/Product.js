@@ -35,8 +35,12 @@ const Product = sequelize.define("Products", {
     type: DataTypes.TEXT,
     allowNull: true,
   },
-  vendor: {
+  vendorType:{
     type: DataTypes.STRING,
+    allowNull: false,
+  },
+  vendorID: {
+    type: DataTypes.INTEGER,
     allowNull: false,
   },
   deletedAt:{

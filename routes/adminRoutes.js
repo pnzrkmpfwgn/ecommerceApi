@@ -6,12 +6,18 @@ const {
   loginAdmin,
   logoutAdmin,
   getUsers,
+  getVendors,
+  getVendor,
   getUser,
   updateUser,
+  updateVendor,
   deleteUser,
+  deleteVendor,
   softDeleteUser,
+  softDeleteVendor,
   unFreezeAccount,
-  resetPasswordSendEmail
+  unFreezeVendor,
+  resetPasswordSendEmail,
 } = require("../controllers/adminController");
 const { adminAuth } = require("../middleware/adminAuth");
 
@@ -53,17 +59,35 @@ router.get("/", adminAuth, getUsers);
 // Get user by ID
 router.get("/:id", adminAuth, getUser);
 
+// Get Vendors
+router.get("/get/vendors", adminAuth, getVendors);
+
+// Get Vendor by ID
+router.get("/vendor/:id", adminAuth, getVendor);
+
 // Update user by ID
 router.put("/update/:id", adminAuth, updateUser);
+
+// Update vendor by ID
+router.put("/update/vendor/:id", adminAuth, updateVendor);
 
 // Delete user by Id
 router.delete("/delete/:id", adminAuth, deleteUser);
 
+// Delete Vendor by ID
+router.delete("/delete/vendor/:id", adminAuth, deleteVendor);
+
 // Soft delete user by Id
 router.put("/softdelete/:id",adminAuth,softDeleteUser);
 
+// Soft delete vendor by ID
+router.put("/softdelete/vendor/:id",adminAuth,softDeleteVendor);
+
 // Unfreeze User by Id
 router.put("/unfreeze/:id",adminAuth,unFreezeAccount);
+
+// Unfreeze Vendor by Id
+router.put("/unfreezevendor/:id",adminAuth,unFreezeVendor);
 
 // Send Password Reset Email as admin
 router.post("/sendpasswordresetemail", adminAuth,resetPasswordSendEmail);
