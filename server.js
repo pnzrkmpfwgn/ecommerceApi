@@ -10,7 +10,8 @@ const vendorRoutes = require("./routes/vendorRoutes");
 const orderRoutes = require("./routes/orderRoutes");
 const wishListRoutes = require("./routes/wishListRoutes");
 const reviewRoutes = require("./routes/reviewRoutes");
-const transactionRoutes = require("./routes/transactionRoutes");
+const cartRoutes = require("./routes/cartRoutes");
+// const transactionRoutes = require("./routes/transactionRoutes");
 
 // Load config
 dotenv.config({ path: "./.env" });
@@ -43,7 +44,8 @@ app.use("/api/vendors", vendorRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/wishlist", wishListRoutes);
 app.use("/api/review", reviewRoutes);
-app.use("api/transaction",transactionRoutes)
+app.use("/api/cart", cartRoutes);
+// app.use("api/transaction",transactionRoutes)
 
 // Start the server
 app.listen(port, () => {
