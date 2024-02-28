@@ -1,0 +1,224 @@
+{
+	"info": {
+		"_postman_id": "6bd3e1ce-c7fc-4ab5-9e5d-5e7d1e67a4c0",
+		"name": "Cart Routes",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "30119358"
+	},
+	"item": [
+		{
+			"name": "Add Item to the Cart as User",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzA5MDM0MDQxLCJleHAiOjE3MDk0NjYwNDF9.8AKqrV4i4s6uYbDbq6ezUadB1N4qgXgi3xvlEC1YEUw",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"customerId\":1,\r\n        \"vendorId\":3,\r\n        \"productId\":2,\r\n        \"amount\":1,\r\n        \"price\":100,\r\n        \"description\":\"I fucking like this\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/cart/add-item",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"cart",
+						"add-item"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Cart Items as user",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzA5MDM0MDQxLCJleHAiOjE3MDk0NjYwNDF9.8AKqrV4i4s6uYbDbq6ezUadB1N4qgXgi3xvlEC1YEUw",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:3000/api/cart/get-cart-items/2",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"cart",
+						"get-cart-items",
+						"2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get One Cart Item as User",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzA5MDM0MDQxLCJleHAiOjE3MDk0NjYwNDF9.8AKqrV4i4s6uYbDbq6ezUadB1N4qgXgi3xvlEC1YEUw",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:3000/api/cart/get-cart-item/2",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"cart",
+						"get-cart-item",
+						"2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update description of the cart item",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzA5MDM0MDQxLCJleHAiOjE3MDk0NjYwNDF9.8AKqrV4i4s6uYbDbq6ezUadB1N4qgXgi3xvlEC1YEUw",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"cartItemId\":1,\r\n    \"description\":\"Gonna buy this\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/cart/update-description",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"cart",
+						"update-description"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Item from Cart as User",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzA5MDM0MDQxLCJleHAiOjE3MDk0NjYwNDF9.8AKqrV4i4s6uYbDbq6ezUadB1N4qgXgi3xvlEC1YEUw",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"cartItemId\":1\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/cart/delete-cart-item",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"cart",
+						"delete-cart-item"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

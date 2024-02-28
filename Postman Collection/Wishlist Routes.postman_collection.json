@@ -1,0 +1,178 @@
+{
+	"info": {
+		"_postman_id": "4967a29c-a695-42a8-bc5a-1cdb4f700106",
+		"name": "Wishlist Routes",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "30119358"
+	},
+	"item": [
+		{
+			"name": "Create wishlist (set a product as wished item) as user",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzA4NTk5NzQzLCJleHAiOjE3MDkwMzE3NDN9.T1FNyg-gmFJIA6HPanjCJG2QE1fBlbzyHJ0l3xsHc0E",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"productId\":2,\r\n    \"notes\":\"Example note 2\",\r\n    \"vendorType\":\"Vendor\",\r\n    \"vendorID\":3\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/wishlist/create-wishlist",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"wishlist",
+						"create-wishlist"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Wishlists as User",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzA4NTk4MzE2LCJleHAiOjE3MDkwMzAzMTZ9.k0SAP8OQ7pVNaSly_vVKK0ew-yxpmbcmWYo7nhkkanA",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:3000/api/wishlist/get-wishlists",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"wishlist",
+						"get-wishlists"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Wish as User",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzA4NTk5NzQzLCJleHAiOjE3MDkwMzE3NDN9.T1FNyg-gmFJIA6HPanjCJG2QE1fBlbzyHJ0l3xsHc0E",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:3000/api/wishlist/delete-wish/2",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"wishlist",
+						"delete-wish",
+						"2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Wishlist Note as User",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzA4NTk5NzQzLCJleHAiOjE3MDkwMzE3NDN9.T1FNyg-gmFJIA6HPanjCJG2QE1fBlbzyHJ0l3xsHc0E",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"notes\":\"I want this\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/wishlist/update-wishlist/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"wishlist",
+						"update-wishlist",
+						"1"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
