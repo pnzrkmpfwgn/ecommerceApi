@@ -1,0 +1,197 @@
+{
+	"info": {
+		"_postman_id": "f22e3ee9-0af8-4246-b4c5-5af003db2976",
+		"name": "Review Routes",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "30119358"
+	},
+	"item": [
+		{
+			"name": "Create Review as User",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzA4NTk5NzQzLCJleHAiOjE3MDkwMzE3NDN9.T1FNyg-gmFJIA6HPanjCJG2QE1fBlbzyHJ0l3xsHc0E",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"productId\":2,\r\n    \"review\":\"Example review\",\r\n    \"rating\":5,\r\n    \"vendorType\":\"Vendor\",\r\n    \"vendorID\":3\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/review/create-review",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"review",
+						"create-review"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Reviews by product ID as User",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:3000/api/review/get-reviews/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"review",
+						"get-reviews",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Review by review ID as User",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:3000/api/review/get-review/2",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"review",
+						"get-review",
+						"2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Review by review ID as User",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzA4NTk5NzQzLCJleHAiOjE3MDkwMzE3NDN9.T1FNyg-gmFJIA6HPanjCJG2QE1fBlbzyHJ0l3xsHc0E",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"review\":\"This shit is trash yall\",\r\n    \"rating\":1\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/review/update-review/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"review",
+						"update-review",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete review by Review ID as User",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzA4NTk5NzQzLCJleHAiOjE3MDkwMzE3NDN9.T1FNyg-gmFJIA6HPanjCJG2QE1fBlbzyHJ0l3xsHc0E",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:3000/api/review/delete-review/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"review",
+						"delete-review",
+						"1"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

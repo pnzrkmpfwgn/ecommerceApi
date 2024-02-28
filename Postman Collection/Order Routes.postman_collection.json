@@ -1,0 +1,393 @@
+{
+	"info": {
+		"_postman_id": "e958f521-d880-4f48-9cc3-fbe1473530ef",
+		"name": "Order Routes",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "30119358"
+	},
+	"item": [
+		{
+			"name": "Order Product by customer",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzA4NDIxNTUwLCJleHAiOjE3MDg4NTM1NTB9.vFwXLVp2z8xp7vZ4KSZyLE08_2QHb437PI8PwnvH_KE",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"customerId\":1,\r\n      \"vendorId\":3,\r\n      \"productId\":3,\r\n      \"amount\":1,\r\n      \"price\":400,\r\n      \"description\":\"description2\",\r\n      \"paymentType\":\"credit card\",\r\n      \"status\":\"pending\",\r\n      \"discountCode\":null,\r\n      \"shippingAddress\":\"street no: 31\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/orders/order-product",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"orders",
+						"order-product"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Orders by All ID Types as Admin",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzA4NDMyNTQ1LCJleHAiOjE3MDg4NjQ1NDV9.yCKzB1FRlgiNASOkya9ZvQ2Ixh3SKjZkpz8iq5xB664",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"type\":\"customer\",\r\n    \"vendorId\":\"3\",\r\n    \"customerId\":\"1\",\r\n    \"orderId\":\"3\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/orders/get-orders-admin",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"orders",
+						"get-orders-admin"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Order By ID as Customer",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzA4MzQ0NTczLCJleHAiOjE3MDg3NzY1NzN9.navSecFVBoExQ__i4ZNtX1hhbEgA7lZtReb4RnAwaIQ",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:3000/api/orders/get-orders/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"orders",
+						"get-orders",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Order by Order ID as User",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzA4NDIxNTUwLCJleHAiOjE3MDg4NTM1NTB9.vFwXLVp2z8xp7vZ4KSZyLE08_2QHb437PI8PwnvH_KE",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:3000/api/orders/get-order/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"orders",
+						"get-order",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get all orders as admin",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzA4NDMyNTQ1LCJleHAiOjE3MDg4NjQ1NDV9.yCKzB1FRlgiNASOkya9ZvQ2Ixh3SKjZkpz8iq5xB664",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:3000/api/orders/get-all-orders",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"orders",
+						"get-all-orders"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Cancel Order as customer",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzA4NDI5ODkwLCJleHAiOjE3MDg4NjE4OTB9.WzwM1yLQc09WP9oikFO-WFgy47uxzVxWSMEWhLutamk",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"orderId\":1\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/orders/cancel-order",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"orders",
+						"cancel-order"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Cancel Order By Order ID as Admin",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzA4NDMyNTQ1LCJleHAiOjE3MDg4NjQ1NDV9.yCKzB1FRlgiNASOkya9ZvQ2Ixh3SKjZkpz8iq5xB664",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"trackingNumber\":\"15301708515434902\",\r\n    \"status\":\"Sent\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/orders/change-order-status",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"orders",
+						"change-order-status"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Order's Shipping Address as Admin",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzA4NDMyNTQ1LCJleHAiOjE3MDg4NjQ1NDV9.yCKzB1FRlgiNASOkya9ZvQ2Ixh3SKjZkpz8iq5xB664",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"trackingNumber\":\"15301708515434902\",\r\n    \"shippingAddress\":\"street no. 32\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/orders/update-shipping-address",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"orders",
+						"update-shipping-address"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Description as Admin",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzA4NDMyNTQ1LCJleHAiOjE3MDg4NjQ1NDV9.yCKzB1FRlgiNASOkya9ZvQ2Ixh3SKjZkpz8iq5xB664",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"trackingNumber\":\"15301708515434902\",\r\n    \"description\":\"Yooooooooo\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/orders/update-description",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"orders",
+						"update-description"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

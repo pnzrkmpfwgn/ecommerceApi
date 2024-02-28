@@ -1,0 +1,347 @@
+{
+	"info": {
+		"_postman_id": "b5774dbb-7ba0-4ae7-b4a4-6effca5f1682",
+		"name": "Product Routes",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "30119358"
+	},
+	"item": [
+		{
+			"name": "Create Product as Admin",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzA3NTQ4OTA4LCJleHAiOjE3MDc5ODA5MDh9.kqabWGIY9Pl6yW5UKqLhDFhqqZpLhEAq-YyYY_rDw1A",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\":\"Samsung Smart Phone\",\r\n      \"imageUrl\":\"null\",\r\n      \"price\":31,\r\n      \"quantityInStock\":31,\r\n      \"category\":\"Mobile Phone\",\r\n      \"description\":\"You talk with this shit idk.\",\r\n      \"vendor\":\"Admin\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/products/admincreateproduct",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"products",
+						"admincreateproduct"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Products as Admin",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzA3NTQ4OTA4LCJleHAiOjE3MDc5ODA5MDh9.kqabWGIY9Pl6yW5UKqLhDFhqqZpLhEAq-YyYY_rDw1A",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:3000/api/products/admingetproducts",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"products",
+						"admingetproducts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Product By ID as Admin",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzA3NTQ4OTA4LCJleHAiOjE3MDc5ODA5MDh9.kqabWGIY9Pl6yW5UKqLhDFhqqZpLhEAq-YyYY_rDw1A",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:3000/api/products/admingetproduct/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"products",
+						"admingetproduct",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Products as User",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:3000/api/products/getproducts",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"products",
+						"getproducts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Product By ID as User",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:3000/api/products/getproduct/3",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"products",
+						"getproduct",
+						"3"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Product By ID as Admin",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzA3NTQ4OTA4LCJleHAiOjE3MDc5ODA5MDh9.kqabWGIY9Pl6yW5UKqLhDFhqqZpLhEAq-YyYY_rDw1A",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\":\"Samsung Smart Mobile Phone\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/products/adminupdateproduct/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"products",
+						"adminupdateproduct",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Admin Soft Delete Product",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzA3NTQ4OTA4LCJleHAiOjE3MDc5ODA5MDh9.kqabWGIY9Pl6yW5UKqLhDFhqqZpLhEAq-YyYY_rDw1A",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:3000/api/products/adminsoftdeleteproduct/2",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"products",
+						"adminsoftdeleteproduct",
+						"2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Recover Product via ID as Admin ",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzA3ODIwMzUwLCJleHAiOjE3MDgyNTIzNTB9.gPdI4LRq-Easy7VkZM-iosKTe5GmtdXY0Lub_cSZ-V8",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:3000/api/products/adminrecoverproduct/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"products",
+						"adminrecoverproduct",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Permanent Delete Product",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzA3ODIwMzUwLCJleHAiOjE3MDgyNTIzNTB9.gPdI4LRq-Easy7VkZM-iosKTe5GmtdXY0Lub_cSZ-V8",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:3000/api/products/deleteproductadmin/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"products",
+						"deleteproductadmin",
+						"1"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
